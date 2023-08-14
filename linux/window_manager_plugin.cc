@@ -814,9 +814,6 @@ static void window_manager_plugin_handle_method_call(
   if (g_strcmp0(method, "ensureInitialized") == 0) {
     g_autoptr(FlValue) result = fl_value_new_bool(true);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
-  } else if (g_strcmp0(method, "getTitleBarHeight") == 0) {
-    int titleBarHeight = GetSystemMetrics(SM_CYCAPTION);
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(titleBarHeight));
   } else if (g_strcmp0(method, "waitUntilReadyToShow") == 0) {
     g_autoptr(FlValue) result = fl_value_new_bool(true);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));

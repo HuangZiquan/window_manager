@@ -44,7 +44,12 @@ class WindowManager {
 
   final MethodChannel _channel = const MethodChannel('window_manager');
 
-  late final double titleBarHeight;
+  /// 初始的標題欄高度
+  ///
+  /// 之後用戶可能會調整螢幕縮放大小，或將應用移至不同解析度的螢幕
+  ///
+  /// 可使用[getTitleBarHeight]方法，重新取得標題欄高度
+  late final double initialTitleBarHeight;
 
   final ObserverList<WindowListener> _listeners = ObserverList<WindowListener>();
 
@@ -104,17 +109,7 @@ class WindowManager {
 
   Future<void> ensureInitialized() async {
     await _channel.invokeMethod('ensureInitialized');
-    titleBarHeight = await _getTitleBarHeight();
-  }
-
-  Future<double> _getTitleBarHeight() async {
-    if (Platform.isWindows) {
-      return kWindowCaptionHeight;
-    }
-    if (Platform.isWindows) {
-      return await _channel.invokeMethod('getTitleBarHeight');
-    }
-    return 0;
+    initialTitleBarHeight = await getTitleBarHeight();
   }
 
   Future<void> setAsFrameless() async {
@@ -338,8 +333,7 @@ class WindowManager {
   }
 
   /// Move the window to a position aligned with the screen.
-  Future<void> setAlignment(
-    Alignment alignment, {
+  Future<void> setAlignment(Alignment alignment, {
     bool animate = false,
   }) async {
     Size windowSize = await getSize();
@@ -375,8 +369,7 @@ class WindowManager {
   }
 
   /// Resizes and moves the window to the supplied bounds.
-  Future<void> setBounds(
-    Rect? bounds, {
+  Future<void> setBounds(Rect? bounds, {
     Offset? position,
     Size? size,
     bool animate = false,
@@ -388,7 +381,8 @@ class WindowManager {
       'width': bounds?.size.width ?? size?.width,
       'height': bounds?.size.height ?? size?.height,
       'animate': animate,
-    }..removeWhere((key, value) => value == null);
+    }
+      ..removeWhere((key, value) => value == null);
     await _channel.invokeMethod('setBounds', arguments);
   }
 
@@ -563,8 +557,7 @@ class WindowManager {
   }
 
   /// Changes the title bar style of native window.
-  Future<void> setTitleBarStyle(
-    TitleBarStyle titleBarStyle, {
+  Future<void> setTitleBarStyle(TitleBarStyle titleBarStyle, {
     bool windowButtonVisibility = true,
   }) async {
     final Map<String, dynamic> arguments = {
@@ -574,8 +567,8 @@ class WindowManager {
     await _channel.invokeMethod('setTitleBarStyle', arguments);
   }
 
-  /// Returns `int` - The title bar height of the native window.
-  Future<int> getTitleBarHeight() async {
+  /// Returns `double` - The title bar height of the native window.
+  Future<double> getTitleBarHeight() async {
     return await _channel.invokeMethod('getTitleBarHeight');
   }
 
@@ -637,8 +630,7 @@ class WindowManager {
   /// ```
   ///
   /// @platforms macos
-  Future<void> setVisibleOnAllWorkspaces(
-    bool visible, {
+  Future<void> setVisibleOnAllWorkspaces(bool visible, {
     bool? visibleOnFullScreen,
   }) async {
     final Map<String, dynamic> arguments = {

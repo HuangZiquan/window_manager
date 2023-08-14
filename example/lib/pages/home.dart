@@ -116,9 +116,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           children: [
             PreferenceListItem(
               title: const Text('TitleBarHeight'),
-              detailText: Text('${windowManager.titleBarHeight}'),
+              detailText: Text('${windowManager.initialTitleBarHeight}'),
               onTap: () async {
-                BotToast.showText(text: 'TitleBarHeight: ${windowManager.titleBarHeight}');
+                BotToast.showText(text: 'TitleBarHeight: ${windowManager.initialTitleBarHeight}');
               },
             ),
           ],
@@ -724,7 +724,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             PreferenceListItem(
               title: const Text('getTitleBarHeight'),
               onTap: () async {
-                int titleBarHeight = await windowManager.getTitleBarHeight();
+                double titleBarHeight = await windowManager.getTitleBarHeight();
                 BotToast.showText(
                   text: 'titleBarHeight: $titleBarHeight',
                 );

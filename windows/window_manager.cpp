@@ -121,7 +121,6 @@ class WindowManager {
   std::string WindowManager::GetTitle();
   void WindowManager::SetTitle(const flutter::EncodableMap& args);
   void WindowManager::SetTitleBarStyle(const flutter::EncodableMap& args);
-  int WindowManager::GetTitleBarHeight();
   bool WindowManager::IsSkipTaskbar();
   void WindowManager::SetSkipTaskbar(const flutter::EncodableMap& args);
   void WindowManager::SetProgressBar(const flutter::EncodableMap& args);
@@ -888,20 +887,6 @@ void WindowManager::SetTitleBarStyle(const flutter::EncodableMap& args) {
   SetWindowPos(hWnd, nullptr, rect.left, rect.top, 0, 0,
                SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE |
                    SWP_FRAMECHANGED);
-}
-
-int WindowManager::GetTitleBarHeight() {
-  HWND hWnd = GetMainWindow();
-
-  TITLEBARINFOEX* ptinfo = (TITLEBARINFOEX*)malloc(sizeof(TITLEBARINFOEX));
-  ptinfo->cbSize = sizeof(TITLEBARINFOEX);
-  SendMessage(hWnd, WM_GETTITLEBARINFOEX, 0, (LPARAM)ptinfo);
-  int height = ptinfo->rcTitleBar.bottom == 0
-                   ? 0
-                   : ptinfo->rcTitleBar.bottom - ptinfo->rcTitleBar.top;
-  free(ptinfo);
-
-  return height;
 }
 
 bool WindowManager::IsSkipTaskbar() {

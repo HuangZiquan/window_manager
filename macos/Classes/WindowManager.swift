@@ -397,10 +397,11 @@ public class WindowManager: NSObject, NSWindowDelegate {
         mainWindow.standardWindowButton(.zoomButton)?.isHidden = !windowButtonVisibility
     }
     
-    public func getTitleBarHeight() -> Int {
-        let frame = mainWindow.frame;
-        let windowHeight: CGFloat = mainWindow.frame.height
-        return Int(windowHeight - mainWindow.contentRect(forFrameRect: frame).height)
+    public func getTitleBarHeight() -> CGFloat {
+        let totalHeight = mainWindow.frame.height
+        let contentHeight = mainWindow.contentLayoutRect.height
+        let titleBarHeight = totalHeight - contentHeight
+        return titleBarHeight
     }
     
     public func isSkipTaskbar() -> Bool {

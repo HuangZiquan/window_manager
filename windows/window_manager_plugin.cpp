@@ -314,6 +314,41 @@ std::optional<LRESULT> WindowManagerPlugin::HandleWindowProc(HWND hWnd,
   return result;
 }
 
+// Function pointer declarations for newer APIs
+bool is_dpi_aware = false;
+decltype(GetDpiForWindow)* fnGetDpiForWindow = nullptr;
+decltype(GetSystemMetricsForDpi)* fnGetSystemMetricsForDpi = nullptr;
+
+bool InitializeDpiFunctions() {
+    if (auto user32 = LoadLibraryA("User32.dll")) {
+        fnGetDpiForWindow = (decltype(GetDpiForWindow)*) GetProcAddress(user32, "GetDpiForWindow");
+        fnGetSystemMetricsForDpi = (decltype(GetSystemMetricsForDpi)*) GetProcAddress(user32, "GetSystemMetricsForDpi");
+
+        if (fnGetDpiForWindow && fnGetSystemMetricsForDpi) {
+            is_dpi_aware = true;
+        }
+    }
+    return is_dpi_aware;
+}
+
+double GetTitleBarHeight(HWND hwnd) {
+    if (fnGetDpiForWindow && fnGetSystemMetricsForDpi) {
+        UINT dpi = fnGetDpiForWindow(hwnd);
+        return fnGetSystemMetricsForDpi(SM_CYCAPTION, dpi) +
+               fnGetSystemMetricsForDpi(SM_CYSIZEFRAME, dpi) +
+               fnGetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi);
+    } else {
+        HDC screen = GetDC(0);
+        int dpi = GetDeviceCaps(screen, LOGPIXELSY);
+        ReleaseDC(0, screen);
+
+        double scalingFactor = dpi / 96.0;
+        return GetSystemMetrics(SM_CYCAPTION) * scalingFactor +
+               GetSystemMetrics(SM_CYSIZEFRAME) * scalingFactor +
+               GetSystemMetrics(SM_CXPADDEDBORDER) * scalingFactor;
+    }
+}
+
 void WindowManagerPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
@@ -322,10 +357,8 @@ void WindowManagerPlugin::HandleMethodCall(
   if (method_name.compare("ensureInitialized") == 0) {
     window_manager->native_window =
         ::GetAncestor(registrar->GetView()->GetNativeWindow(), GA_ROOT);
+    InitializeDpiFunctions();
     result->Success(flutter::EncodableValue(true));
-  } else if (method_name.compare("getTitleBarHeight") == 0) {
-    int titleBarHeight = GetSystemMetrics(SM_CYCAPTION);
-    result->Success(flutter::EncodableValue(titleBarHeight));
   } else if (method_name.compare("waitUntilReadyToShow") == 0) {
     window_manager->WaitUntilReadyToShow();
     result->Success(flutter::EncodableValue(true));
@@ -498,8 +531,9 @@ void WindowManagerPlugin::HandleMethodCall(
     window_manager->SetTitleBarStyle(args);
     result->Success(flutter::EncodableValue(true));
   } else if (method_name.compare("getTitleBarHeight") == 0) {
-    int value = window_manager->GetTitleBarHeight();
-    result->Success(flutter::EncodableValue(value));
+    HWND hwnd = GetForegroundWindow();
+    double totalTitleBarHeight = GetTitleBarHeight(hwnd);
+    result->Success(flutter::EncodableValue(totalTitleBarHeight));
   } else if (method_name.compare("isSkipTaskbar") == 0) {
     bool value = window_manager->IsSkipTaskbar();
     result->Success(flutter::EncodableValue(value));
