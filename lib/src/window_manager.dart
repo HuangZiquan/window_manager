@@ -12,6 +12,8 @@ import 'package:window_manager/src/utils/calc_window_position.dart';
 import 'package:window_manager/src/window_listener.dart';
 import 'package:window_manager/src/window_options.dart';
 
+import '../window_manager.dart';
+
 const kWindowEventClose = 'close';
 const kWindowEventFocus = 'focus';
 const kWindowEventBlur = 'blur';
@@ -106,7 +108,13 @@ class WindowManager {
   }
 
   Future<double> _getTitleBarHeight() async {
-    return await _channel.invokeMethod('getTitleBarHeight');
+    if (Platform.isWindows) {
+      return kWindowCaptionHeight;
+    }
+    if (Platform.isWindows) {
+      return await _channel.invokeMethod('getTitleBarHeight');
+    }
+    return 0;
   }
 
   Future<void> setAsFrameless() async {
