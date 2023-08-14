@@ -42,8 +42,9 @@ class WindowManager {
 
   final MethodChannel _channel = const MethodChannel('window_manager');
 
-  final ObserverList<WindowListener> _listeners =
-      ObserverList<WindowListener>();
+  late final double titleBarHeight;
+
+  final ObserverList<WindowListener> _listeners = ObserverList<WindowListener>();
 
   Future<void> _methodCallHandler(MethodCall call) async {
     for (final WindowListener listener in listeners) {
@@ -77,8 +78,7 @@ class WindowManager {
   }
 
   List<WindowListener> get listeners {
-    final List<WindowListener> localListeners =
-        List<WindowListener>.from(_listeners);
+    final List<WindowListener> localListeners = List<WindowListener>.from(_listeners);
     return localListeners;
   }
 
@@ -102,6 +102,11 @@ class WindowManager {
 
   Future<void> ensureInitialized() async {
     await _channel.invokeMethod('ensureInitialized');
+    titleBarHeight = await _getTitleBarHeight();
+  }
+
+  Future<double> _getTitleBarHeight() async {
+    return await _channel.invokeMethod('getTitleBarHeight');
   }
 
   Future<void> setAsFrameless() async {
@@ -715,18 +720,10 @@ class WindowManager {
       'startResizing',
       {
         'resizeEdge': describeEnum(resizeEdge),
-        'top': resizeEdge == ResizeEdge.top ||
-            resizeEdge == ResizeEdge.topLeft ||
-            resizeEdge == ResizeEdge.topRight,
-        'bottom': resizeEdge == ResizeEdge.bottom ||
-            resizeEdge == ResizeEdge.bottomLeft ||
-            resizeEdge == ResizeEdge.bottomRight,
-        'right': resizeEdge == ResizeEdge.right ||
-            resizeEdge == ResizeEdge.topRight ||
-            resizeEdge == ResizeEdge.bottomRight,
-        'left': resizeEdge == ResizeEdge.left ||
-            resizeEdge == ResizeEdge.topLeft ||
-            resizeEdge == ResizeEdge.bottomLeft,
+        'top': resizeEdge == ResizeEdge.top || resizeEdge == ResizeEdge.topLeft || resizeEdge == ResizeEdge.topRight,
+        'bottom': resizeEdge == ResizeEdge.bottom || resizeEdge == ResizeEdge.bottomLeft || resizeEdge == ResizeEdge.bottomRight,
+        'right': resizeEdge == ResizeEdge.right || resizeEdge == ResizeEdge.topRight || resizeEdge == ResizeEdge.bottomRight,
+        'left': resizeEdge == ResizeEdge.left || resizeEdge == ResizeEdge.topLeft || resizeEdge == ResizeEdge.bottomLeft,
       },
     );
   }

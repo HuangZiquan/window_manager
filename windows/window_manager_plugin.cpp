@@ -323,6 +323,9 @@ void WindowManagerPlugin::HandleMethodCall(
     window_manager->native_window =
         ::GetAncestor(registrar->GetView()->GetNativeWindow(), GA_ROOT);
     result->Success(flutter::EncodableValue(true));
+  } else if (method_name.compare("getTitleBarHeight") == 0) {
+    int titleBarHeight = GetSystemMetrics(SM_CYCAPTION);
+    result->Success(flutter::EncodableValue(titleBarHeight));
   } else if (method_name.compare("waitUntilReadyToShow") == 0) {
     window_manager->WaitUntilReadyToShow();
     result->Success(flutter::EncodableValue(true));

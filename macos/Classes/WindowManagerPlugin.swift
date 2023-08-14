@@ -38,6 +38,13 @@ public class WindowManagerPlugin: NSObject, FlutterPlugin {
             _inited = true
         }
     }
+
+    private func getTitleBarHeight() -> CGFloat {
+        let contentHeight = windowManager.mainWindow.contentLayoutRect.height
+        let totalHeight = windowManager.mainWindow.frame.height
+        let titleBarHeight = totalHeight - contentHeight
+        return titleBarHeight
+    }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let methodName: String = call.method
@@ -47,6 +54,10 @@ public class WindowManagerPlugin: NSObject, FlutterPlugin {
         case "ensureInitialized":
             ensureInitialized()
             result(true)
+            break
+        case "getTitleBarHeight":
+            let titleBarHeight = getTitleBarHeight()
+            result(titleBarHeight)
             break
         case "waitUntilReadyToShow":
             windowManager.waitUntilReadyToShow()

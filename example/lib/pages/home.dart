@@ -75,9 +75,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   void _init() async {
     await trayManager.setIcon(
-      Platform.isWindows
-          ? 'images/tray_icon_original.ico'
-          : 'images/tray_icon_original.png',
+      Platform.isWindows ? 'images/tray_icon_original.ico' : 'images/tray_icon_original.png',
     );
     Menu menu = Menu(
       items: [
@@ -102,13 +100,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   void _handleSetIcon(String iconType) async {
     _iconType = iconType;
-    String iconPath =
-        Platform.isWindows ? 'images/tray_icon.ico' : 'images/tray_icon.png';
+    String iconPath = Platform.isWindows ? 'images/tray_icon.ico' : 'images/tray_icon.png';
 
     if (_iconType == 'original') {
-      iconPath = Platform.isWindows
-          ? 'images/tray_icon_original.ico'
-          : 'images/tray_icon_original.png';
+      iconPath = Platform.isWindows ? 'images/tray_icon_original.ico' : 'images/tray_icon_original.png';
     }
 
     await windowManager.setIcon(iconPath);
@@ -120,19 +115,25 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         PreferenceListSection(
           children: [
             PreferenceListItem(
+              title: const Text('TitleBarHeight'),
+              detailText: Text('${windowManager.titleBarHeight}'),
+              onTap: () async {
+                BotToast.showText(text: 'TitleBarHeight: ${windowManager.titleBarHeight}');
+              },
+            ),
+          ],
+        ),
+        PreferenceListSection(
+          children: [
+            PreferenceListItem(
               title: const Text('ThemeMode'),
               detailText: Text('${sharedConfig.themeMode}'),
               onTap: () async {
-                ThemeMode newThemeMode =
-                    sharedConfig.themeMode == ThemeMode.light
-                        ? ThemeMode.dark
-                        : ThemeMode.light;
+                ThemeMode newThemeMode = sharedConfig.themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
 
                 await sharedConfigManager.setThemeMode(newThemeMode);
                 await windowManager.setBrightness(
-                  newThemeMode == ThemeMode.light
-                      ? Brightness.light
-                      : Brightness.dark,
+                  newThemeMode == ThemeMode.light ? Brightness.light : Brightness.dark,
                 );
               },
             ),
@@ -375,8 +376,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 },
                 isSelected: _kSizes.map((e) => e == _size).toList(),
                 children: <Widget>[
-                  for (var size in _kSizes)
-                    Text(' ${size.width.toInt()}x${size.height.toInt()} '),
+                  for (var size in _kSizes) Text(' ${size.width.toInt()}x${size.height.toInt()} '),
                 ],
               ),
               onTap: () async {
@@ -567,8 +567,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 },
                 isSelected: _kMinSizes.map((e) => e == _minSize).toList(),
                 children: <Widget>[
-                  for (var size in _kMinSizes)
-                    Text(' ${size.width.toInt()}x${size.height.toInt()} '),
+                  for (var size in _kMinSizes) Text(' ${size.width.toInt()}x${size.height.toInt()} '),
                 ],
               ),
             ),
@@ -582,8 +581,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 },
                 isSelected: _kMaxSizes.map((e) => e == _maxSize).toList(),
                 children: <Widget>[
-                  for (var size in _kMaxSizes)
-                    Text(' ${size.width.toInt()}x${size.height.toInt()} '),
+                  for (var size in _kMaxSizes) Text(' ${size.width.toInt()}x${size.height.toInt()} '),
                 ],
               ),
             ),
@@ -691,8 +689,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 BotToast.showText(
                   text: title.toString(),
                 );
-                title =
-                    'window_manager_example - ${DateTime.now().millisecondsSinceEpoch}';
+                title = 'window_manager_example - ${DateTime.now().millisecondsSinceEpoch}';
                 await windowManager.setTitle(title);
               },
             ),
@@ -789,8 +786,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 'isVisibleOnAllWorkspaces / setVisibleOnAllWorkspaces',
               ),
               onTap: () async {
-                bool isVisibleOnAllWorkspaces =
-                    await windowManager.isVisibleOnAllWorkspaces();
+                bool isVisibleOnAllWorkspaces = await windowManager.isVisibleOnAllWorkspaces();
                 BotToast.showText(
                   text: 'isVisibleOnAllWorkspaces: $isVisibleOnAllWorkspaces',
                 );
@@ -977,8 +973,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                           child: GestureDetector(
                             child: const Text('DragToResizeArea'),
                             onTap: () {
-                              BotToast.showText(
-                                  text: 'DragToResizeArea example');
+                              BotToast.showText(text: 'DragToResizeArea example');
                             },
                           ),
                         ),
